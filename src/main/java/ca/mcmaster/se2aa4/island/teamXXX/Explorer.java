@@ -14,8 +14,15 @@ public class Explorer implements IExplorerRaid {
     private final Logger logger = LogManager.getLogger();
     private JSONObject result = null;
     private String direction = null;
-    private int count = 0;
-    private int dst = 0;
+    private int x = 1;
+    private int y = 1;
+    private int limitX = 0;
+    private int limitY = 0;
+    private int dstX = 0;
+    private int dstY = 0;
+    private char dir = 'E';
+    private int n = 0;
+    private boolean echo = true;
 
     @Override
     public void initialize(String s) {
@@ -33,43 +40,82 @@ public class Explorer implements IExplorerRaid {
     public String takeDecision() {
         
         JSONObject decision = new JSONObject();
-        findLand(decision);
+        decision = findLand(decision);
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
 
-    private void findLand(JSONObject decision){
-        decision.put("action", "fly");
-
-        if(count == 31){
-            
-            decision.put("action", "heading");
-            decision.put("parameters", new JSONObject().put("direction", "S"));
-    
+    private JSONObject findLand(JSONObject decision){
+        
+        if (n == 1){
+            decision.put("action","stop");
         }
-        else if(count == 32){
-            decision.put("action", "echo");
-            decision.put("parameters", new JSONObject().put("direction", "S"));
-
-        }
-        else if(count == 33){
-            JSONObject extra = result.getJSONObject("extras");
-            String found = extra.getString("found");
-            if(found.equals("GROUND")){
-                this.dst = extra.getInt("range");
+        //find boarders
+        if (limitX == 0 && limitY == 0){
+            if(result == null){
+                decision.put("action", "echo");
+                decision.put("parameters", new JSONObject().put("direction", "E"));
+            }
+            else{
+                JSONObject extra = result.getJSONObject("extras");
+                this.limitX = extra.getInt("range");
+                decision.put("action", "echo");
+                decision.put("parameters", new JSONObject().put("direction", "S"));
             }
         }
-        /*
-        else if(count == 34+dst){
-            decision.put("action", "scan");
-        }*/
-        else if(count == 34+dst){
-            decision.put("action", "stop");
+        else if(limitY == 0){
+            JSONObject extra = result.getJSONObject("extras");
+            this.limitY = extra.getInt("range");
+        }
+        if(limitY != 0){
+            
+            if(x < limitX/2){
+                if(x < limitX/2 - 1){
+                    x++;
+                    decision.put("action", "fly");
+                    return decision;
+                }
+                x++;
+                if(x == limitX/2){
+                    decision.put("action", "heading");
+                    decision.put("parameters", new JSONObject().put("direction", "S"));
+                    dir = 'S';
+                    y++;
+                }
+                return decision;
+            }
+            else if(echo){
+                JSONObject extra = result.getJSONObject("extras");
+                if(extra.has("found")){
+                    String found = extra.getString("found");
+                    if(found.equals("GROUND")){
+                        dstY = extra.getInt("range")+1;
+                    }
+                    echo = false;
+                }
+                decision.put("action", "echo");
+                decision.put("parameters", new JSONObject().put("direction", "S"));
+                return decision;
+            }
+            else if(dstY > 0){
+                y++;
+                dstY--;
+                decision.put("action","fly");
+                return decision;
+            }
+            else{
+                if( n == 0){
+                    decision.put("action","scan");
+                    n = 1;
+                }
+                
+                
+            }
+            
             
         }
         
-        count++;
-        logger.info(count);
+        return decision;
     }
 
     @Override
