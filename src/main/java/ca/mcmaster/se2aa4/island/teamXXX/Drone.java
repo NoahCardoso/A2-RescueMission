@@ -71,12 +71,102 @@ class Drone{
         return this.y;
     }
 
-    public void setX(int x){
+    private void setX(int x){
         this.x = x;
     }
 
-    public void setY(int y){
+    private void setY(int y){
         this.y = y;
+    }
+
+    public void fly(){
+        //Assumes 0,0 is bottom left
+        switch (dir) {
+            case 'N':
+                setY(y+1);
+                break;
+            case 'E':
+                setX(y-1);
+                break;
+            case 'S':
+                setY(y-1);
+                break;
+            case 'W':
+                setX(x-1);
+                break;
+            default:
+                System.out.println("No known direction");
+                break;
+        }
+    }
+
+    public boolean echo(char echoDir){
+        char heading = getRelativeDir(echoDir);
+        if(heading == 'b'){
+            System.out.println("Invalid echo direction");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public void scan(){
+
+        
+    }
+
+    //f = forward, r = right, l = left, b = backward
+    private char getRelativeDir(char echoDir){
+        switch (dir) {
+            case 'N':
+                switch (echoDir){
+                    case 'N':
+                        return 'f';
+                    case 'E':
+                        return 'r';
+                    case 'W':
+                        return 'l';
+                    default:
+                        return 'b';
+                }
+            case 'E':
+                switch (echoDir){
+                    case 'E':
+                        return 'f';
+                    case 'S':
+                        return 'r';
+                    case 'N':
+                        return 'l';
+                    default:
+                        return 'b';
+                } 
+            case 'S':
+                switch (echoDir){
+                    case 'S':
+                        return 'f';
+                    case 'W':
+                        return 'r';
+                    case 'E':
+                        return 'l';
+                    default:
+                        return 'b';
+                }
+            case 'W':
+                switch (echoDir){
+                    case 'W':
+                        return 'f';
+                    case 'N':
+                        return 'r';
+                    case 'S':
+                        return 'l';
+                    default:
+                        return 'b';
+                }
+            default:
+                System.out.println("No known direction");
+                return 'b';
+        }
     }
 
 
