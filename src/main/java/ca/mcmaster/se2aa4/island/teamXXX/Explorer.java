@@ -1,13 +1,14 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
 import java.io.StringReader;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import eu.ace_design.island.bot.IExplorerRaid;
 
 public class Explorer implements IExplorerRaid {
 
@@ -30,6 +31,7 @@ public class Explorer implements IExplorerRaid {
     private boolean foundC = false;
     private boolean overOcean = false;
     private int triggerTurn = 0;
+    private DroneController droneController;
 
     @Override
     public void initialize(String s) {
@@ -42,106 +44,20 @@ public class Explorer implements IExplorerRaid {
         drone = new Drone(batteryLevel, 'E');
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        this.droneController = new DroneController(drone);
     }
 
     @Override
     public String takeDecision() {
         
-        JSONObject decision = new JSONObject();
-        if (n == 0) {
-            decision = findLand(decision);
-        } else if (triggerTurn == 0) {
-            decision = searchLandDown(decision);
-        } else if (1 <= triggerTurn && triggerTurn <= 3) {
-            decision = turn(decision);
-        } else {
-            decision = searchLandUp(decision);
-        }
-
-        if (foundE && foundC) {
-            decision = end(decision);
-        }
+        JSONObject decision = droneController.getNextMove();
 
         logger.info("** TriggerVal: {}",triggerTurn);
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
 
-    private JSONObject findLand(JSONObject decision){
-
-        //find boarders
-        if (limitX == 0 && limitY == 0){
-            if(result == null){
-                decision.put("action", "echo");
-                decision.put("parameters", new JSONObject().put("direction", "E"));
-            }
-            else{
-                JSONObject extra = result.getJSONObject("extras");
-                this.limitX = extra.getInt("range");
-                decision.put("action", "echo");
-                decision.put("parameters", new JSONObject().put("direction", "S"));
-            }
-        }
-        else if(limitY == 0){
-            JSONObject extra = result.getJSONObject("extras");
-            this.limitY = extra.getInt("range");
-        }
-        if(limitY != 0){
-            
-            if(x < limitX/2){
-                if(x < limitX/2 - 1){
-                    x++;
-                    drone.updatePosition();
-                    decision.put("action", "fly");
-                    return decision;
-                }
-                x++;
-                if(x == limitX/2){
-                    drone.updatePosition();
-                    decision.put("action", "heading");
-                    decision.put("parameters", new JSONObject().put("direction", "S"));
-                    dir = 'S';
-                    drone.setDir('S');
-                    drone.updatePosition();
-                    y++;
-                }
-                return decision;
-            }
-            else if(echo){
-                JSONObject extra = result.getJSONObject("extras");
-                if(extra.has("found")){
-                    String found = extra.getString("found");
-                    if(found.equals("GROUND")){
-                        dstY = extra.getInt("range")+1;
-                    }
-                    echo = false;
-                }
-                decision.put("action", "echo");
-                decision.put("parameters", new JSONObject().put("direction", "S"));
-                return decision;
-            }
-            else if(dstY > 0){
-                y++;
-                dstY--;
-                drone.updatePosition();
-                decision.put("action","fly");
-                return decision;
-            }
-            else{
-                if( n == 0){
-                    decision.put("action","scan");
-                    action = 0;
-                    n = 1;
-                }
-                
-                
-            }
-            
-            
-        }
-        
-        return decision;
-    }
+    
 
     private JSONObject searchLandDown(JSONObject decision){
         JSONObject info = result.getJSONObject("extras");
@@ -334,6 +250,7 @@ public class Explorer implements IExplorerRaid {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
+        droneController.setInfo(extraInfo);
         logger.info("Additional information received: {}", extraInfo);
         logger.info("Battery: {}", drone.getBattery());
         logger.info("X: {}", drone.getX());
