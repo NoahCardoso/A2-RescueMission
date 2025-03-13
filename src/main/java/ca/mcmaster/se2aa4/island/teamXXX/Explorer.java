@@ -51,7 +51,7 @@ public class Explorer implements IExplorerRaid {
     public String takeDecision() {
         
         JSONObject decision = droneController.getNextMove();
-
+        
         logger.info("** TriggerVal: {}",triggerTurn);
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();

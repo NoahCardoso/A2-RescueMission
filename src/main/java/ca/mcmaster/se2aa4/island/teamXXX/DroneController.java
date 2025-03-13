@@ -3,9 +3,10 @@ package ca.mcmaster.se2aa4.island.teamXXX;
 import org.json.JSONObject;
 import java.util.Queue;
 import java.util.LinkedList;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 public class DroneController{
-
+    private final Logger logger = LogManager.getLogger();
     private Drone drone;
     private JSONObject info;
     Queue<JSONObject> moveQueue;
@@ -21,29 +22,28 @@ public class DroneController{
         this.info = info;
     }
     public JSONObject getNextMove(){
-        
-        JSONObject decision = new JSONObject();
+
         if(moveQueue.isEmpty()){
             if(landfound){
-                decision.put("action", "stop");
-                this.moveQueue.add(decision);
+
+                //!scan the land!
+                
+                this.moveQueue.add(new JSONObject().put("action", "stop"));
             }
             else{
                 if(previousAction == null){
+                   
+                    this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "E")));
                     
-                    decision.put("action", "echo");
-                    decision.put("parameters", new JSONObject().put("direction", "E"));
-                    this.moveQueue.add(decision);
                 }
-                //move forward till find land to your right
+                
                 else if(drone.getX() == 0 && drone.getY() == 0 && drone.getDir() == 'E'){
+                    
                     if(info.has("range")){
                         this.distance = info.getInt("range");
-                        decision.put("action", "fly");
-                        this.moveQueue.add(decision);
-                        decision.put("action", "echo");
-                        decision.put("parameters", new JSONObject().put("direction", "S"));
-                        this.moveQueue.add(decision);
+                        drone.fly();
+                        this.moveQueue.add(new JSONObject().put("action", "fly"));
+                        this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "S")));
 
                     }
 
@@ -51,29 +51,31 @@ public class DroneController{
                 else if(drone.getX() != distance && drone.getY() == 0 && drone.getDir() == 'E'){
                     if(info.has("found")){
                         if(info.getString("found").equals("GROUND")){
-                            decision.put("action", "heading");
-                            decision.put("parameters", new JSONObject().put("direction", "S"));
-                            this.moveQueue.add(decision);
+                            drone.setDir('S');
+                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
+                            this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "S")));
+                            
                         }else{
-                            decision.put("action", "fly");
-                            this.moveQueue.add(decision);
-                            decision.put("action", "echo");
-                            decision.put("parameters", new JSONObject().put("direction", "S"));
-                            this.moveQueue.add(decision);
+                            drone.fly();
+                            this.moveQueue.add(new JSONObject().put("action", "fly"));
+                            this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "S")));
                         }
                     }
                     
 
                 }
                 else if (drone.getDir() == 'S') {
+                    
                     if (info.has("range")) {
+                        
                         int length = info.getInt("range");
-                        decision.put("action", "fly");
+                        
                         for(int i = 0; i < length; i++){
-                            this.moveQueue.add(decision);
+                            drone.fly();
+                            this.moveQueue.add(new JSONObject().put("action", "fly"));
                         }
                     }
-                    landfound = true;
+                    this.landfound = true;
                 }
             }
         }
