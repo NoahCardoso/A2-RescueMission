@@ -5,11 +5,15 @@ class Drone{
     private int x = 0;
     private int y = 0;
     private int battery;
-    private char lastDir;
-    private char dir;
+    private Direction lastDir;
+    private Direction dir;
     private int lastScan = 0;
 
-    Drone(int battery, char dir){
+    //Not used yet
+    private POI creek = new POI("creek");
+    private POI eSite = new POI("Emergency Site");
+
+    Drone(int battery, Direction dir){
         this.battery = battery;
         this.dir = dir;
     }
@@ -26,16 +30,16 @@ class Drone{
         return this.battery;
     }
 
-    public char getDir(){
+    public Direction getDir(){
         return this.dir;
     }
 
-    public void setDir(char dir){
+    public void setDir(Direction dir){
         this.lastDir = this.dir;
         this.dir = dir;
     }
 
-    public char getLastDir(){
+    public Direction getLastDir(){
         return this.lastDir;
     }
 
@@ -49,18 +53,6 @@ class Drone{
 
     public void resetLastScan() {
         this.lastScan = 0;
-    }
-
-    public void updatePosition() {
-        if (dir == 'E'){
-            x++;
-        } else if (dir == 'W') {
-            x--;
-        } else if (dir == 'N') {
-            y--;
-        } else {
-            y++;
-        }
     }
 
     public int getX(){
@@ -79,19 +71,23 @@ class Drone{
         this.y = y;
     }
 
+    public void decreaseBattery(int bat){
+        this.battery -= bat;
+    }
+
     public void fly(){
-        //Assumes 0,0 is bottom left
+        //Assumes 0,0 is top left
         switch (dir) {
-            case 'N':
-                setY(y+1);
-                break;
-            case 'E':
-                setX(y-1);
-                break;
-            case 'S':
+            case NORTH:
                 setY(y-1);
                 break;
-            case 'W':
+            case EAST:
+                setX(x+1);
+                break;
+            case SOUTH:
+                setY(y+1);
+                break;
+            case WEST:
                 setX(x-1);
                 break;
             default:
@@ -100,26 +96,10 @@ class Drone{
         }
     }
 
-    public boolean echo(char echoDir){
-        char heading = getRelativeDir(echoDir);
-        if(heading == 'b'){
-            System.out.println("Invalid echo direction");
-            return false;
-        }
-
-        return true;
-
-    }
-
-    public void scan(){
-
-        
-    }
-
     //f = forward, r = right, l = left, b = backward
     private char getRelativeDir(char echoDir){
         switch (dir) {
-            case 'N':
+            case NORTH:
                 switch (echoDir){
                     case 'N':
                         return 'f';
@@ -130,7 +110,7 @@ class Drone{
                     default:
                         return 'b';
                 }
-            case 'E':
+            case EAST:
                 switch (echoDir){
                     case 'E':
                         return 'f';
@@ -141,7 +121,7 @@ class Drone{
                     default:
                         return 'b';
                 } 
-            case 'S':
+            case SOUTH:
                 switch (echoDir){
                     case 'S':
                         return 'f';
@@ -152,7 +132,7 @@ class Drone{
                     default:
                         return 'b';
                 }
-            case 'W':
+            case WEST:
                 switch (echoDir){
                     case 'W':
                         return 'f';

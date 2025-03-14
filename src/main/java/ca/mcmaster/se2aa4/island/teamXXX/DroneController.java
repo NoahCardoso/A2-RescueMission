@@ -37,7 +37,7 @@ public class DroneController{
                     
                 }
                 
-                else if(drone.getX() == 0 && drone.getY() == 0 && drone.getDir() == 'E'){
+                else if(drone.getX() == 0 && drone.getY() == 0 && drone.getDir() == Direction.EAST){
                     
                     if(info.has("range")){
                         this.distance = info.getInt("range");
@@ -48,10 +48,10 @@ public class DroneController{
                     }
 
                 }
-                else if(drone.getX() != distance && drone.getY() == 0 && drone.getDir() == 'E'){
+                else if(drone.getX() != distance && drone.getY() == 0 && drone.getDir() == Direction.EAST){
                     if(info.has("found")){
                         if(info.getString("found").equals("GROUND")){
-                            drone.setDir('S');
+                            drone.setDir(Direction.SOUTH);
                             this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
                             this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "S")));
                             
@@ -64,7 +64,7 @@ public class DroneController{
                     
 
                 }
-                else if (drone.getDir() == 'S') {
+                else if (drone.getDir() == Direction.SOUTH) {
                     
                     if (info.has("range")) {
                         
