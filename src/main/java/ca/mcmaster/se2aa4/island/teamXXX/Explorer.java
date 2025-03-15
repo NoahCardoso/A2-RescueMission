@@ -1,6 +1,8 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +34,8 @@ public class Explorer implements IExplorerRaid {
     private boolean overOcean = false;
     private int triggerTurn = 0;
     private DroneController droneController;
+    private POI creeks = new POI("creek");
+    private POI sites = new POI("site");
 
     @Override
     public void initialize(String s) {
@@ -51,9 +55,13 @@ public class Explorer implements IExplorerRaid {
     public String takeDecision() {
         
         JSONObject decision = droneController.getNextMove();
-        
-        logger.info("** TriggerVal: {}",triggerTurn);
+
         logger.info("** Decision: {}",decision.toString());
+        if (decision.getString("action").equals("stop")) {
+            logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
+            logger.info("** Sites: {}", sites.getAllPOIs().toString());
+        }
+
         return decision.toString();
     }
 
@@ -73,34 +81,20 @@ public class Explorer implements IExplorerRaid {
         logger.info("Battery: {}", drone.getBattery());
         logger.info("X: {}", drone.getX());
         logger.info("Y: {}", drone.getY());
-        logger.info("LY: {}", limitY);
-        logger.info("LX: {}", limitX);
         logData(extraInfo);
     }
 
     private void logData(JSONObject data) {
-        JSONArray creeks;
-        JSONArray eSites;
-
         if (data.has("creeks")) {
-            creeks = data.getJSONArray("creeks");
-            if (creeks.length() >= 1) {
-                foundC = true;
-                logger.info("FOUND CREEK");
+            if (data.getJSONArray("creeks").length() >= 1) {
+                creeks.addPOI(data.getJSONArray("creeks").getString(0));
             }
         }
         if (data.has("sites")) {
-            eSites = data.getJSONArray("sites");
-            if (eSites.length() >= 1) {
-                foundE = true;
-                logger.info("FOUND SITE");
+            if (data.getJSONArray("sites").length() >= 1) {
+                sites.addPOI(data.getJSONArray("sites").getString(0));
             }
         }
-    }
-
-    private JSONObject end(JSONObject decision){
-        decision.put("action","stop");
-        return decision;
     }
 
     @Override
