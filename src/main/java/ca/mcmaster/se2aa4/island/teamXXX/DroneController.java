@@ -108,7 +108,7 @@ public class DroneController{
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
                 this.moveQueue.add(new JSONObject().put("action", "fly"));
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "N")));
+                this.moveQueue.add(new JSONObject().put("action", "scan"));
 
                 drone.setDir(Direction.WEST);
                 drone.fly();
@@ -121,12 +121,12 @@ public class DroneController{
             } else {
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
+                this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
                 this.moveQueue.add(new JSONObject().put("action", "fly"));
                 this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "S")));
+                this.moveQueue.add(new JSONObject().put("action", "scan"));
 
                 drone.setDir(Direction.WEST);
                 drone.fly();

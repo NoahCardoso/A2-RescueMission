@@ -8,7 +8,7 @@ public class POI{
     //100 max size
 
     private ArrayList<String> ids = new ArrayList<>();
-    private ArrayList<int[]> locations = new ArrayList<>(); 
+    private ArrayList<int[]> locations = new ArrayList<>();
     private String name;
 
     POI(String name){

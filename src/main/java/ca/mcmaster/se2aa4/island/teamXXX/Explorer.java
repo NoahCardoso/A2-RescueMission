@@ -58,8 +58,11 @@ public class Explorer implements IExplorerRaid {
 
         logger.info("** Decision: {}",decision.toString());
         if (decision.getString("action").equals("stop")) {
+            logger.info("** East Echos: {}", n);
             logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
             logger.info("** Sites: {}", sites.getAllPOIs().toString());
+        } else if (decision.getString("action").equals("echo") && decision.getJSONObject("parameters").getString("direction").equals("E")) {
+            n++;
         }
 
         return decision.toString();
