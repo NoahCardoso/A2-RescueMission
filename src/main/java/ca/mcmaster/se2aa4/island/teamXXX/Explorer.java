@@ -87,12 +87,12 @@ public class Explorer implements IExplorerRaid {
     private void logData(JSONObject data) {
         if (data.has("creeks")) {
             if (data.getJSONArray("creeks").length() >= 1) {
-                creeks.addPOI(data.getJSONArray("creeks").getString(0));
+                creeks.addPOI(data.getJSONArray("creeks").getString(0), drone.getX(), drone.getY());
             }
         }
         if (data.has("sites")) {
             if (data.getJSONArray("sites").length() >= 1) {
-                sites.addPOI(data.getJSONArray("sites").getString(0));
+                sites.addPOI(data.getJSONArray("sites").getString(0), drone.getX(), drone.getY());
             }
         }
     }
