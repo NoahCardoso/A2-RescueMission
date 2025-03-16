@@ -58,11 +58,12 @@ public class Explorer implements IExplorerRaid {
 
         logger.info("** Decision: {}",decision.toString());
         if (decision.getString("action").equals("stop")) {
-            logger.info("** East Echos: {}", n);
             logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
+            logger.info("** Locations: {}", creeks.getAllPOILocations());
             logger.info("** Sites: {}", sites.getAllPOIs().toString());
-        } else if (decision.getString("action").equals("echo") && decision.getJSONObject("parameters").getString("direction").equals("E")) {
-            n++;
+            logger.info("** Internal Map: {}", droneController.map.displayMap());
+            logger.info("{}", droneController.map.getNorth());
+            logger.info("{}", droneController.map.getSouth());
         }
 
         return decision.toString();

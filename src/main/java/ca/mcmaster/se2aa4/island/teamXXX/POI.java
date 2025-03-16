@@ -42,6 +42,14 @@ public class POI{
         return (ArrayList)ids.clone();
     }
 
+    public ArrayList getAllPOILocations() {
+        ArrayList<String> formattedLocations = new ArrayList<>();
+        for (int[] loc : locations) {
+            formattedLocations.add(java.util.Arrays.toString(loc));
+        }
+        return formattedLocations;
+    }
+
     public String getClosestPOI(int x, int y) {
         if (ids.isEmpty()) {
             throw new NoSuchElementException();
