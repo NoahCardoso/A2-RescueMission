@@ -50,6 +50,7 @@ public class DroneController{
         
     }
 
+    // scans east and south, then initializes a map with those values
     private void initializeInternalMap() {
         if (map == null && previousAction == null) {
             this.moveQueue.add(new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", "E")));
@@ -65,6 +66,7 @@ public class DroneController{
         }
     }
 
+    // flys around the island, building the shape of the island within the internal map
     private void buildInternalMap() {
         if (landfound == false && drone.getDir() == Direction.EAST) {
             if (info.getString("found").equals("GROUND")) {
@@ -188,6 +190,7 @@ public class DroneController{
         }
     }
 
+    // moves left to right, scanning wherever the internal map has a value of 1
     private void scanEast() {
         int y = map.nextLand(drone.getX(), drone.getY(), drone.getDir());
 
@@ -325,6 +328,7 @@ public class DroneController{
         }
     }
 
+    // moves right to left, scanning wherever the internal map has a value of 1
     private void scanWest() {
         int y = map.nextLand(drone.getX(), drone.getY(), drone.getDir());
 

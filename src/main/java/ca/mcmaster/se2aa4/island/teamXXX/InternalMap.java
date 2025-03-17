@@ -6,11 +6,11 @@ public class InternalMap {
     private final int limitX;
     private final int limitY;
     private int[][] map;
-    private int mostNorth;
-    private int mostEast;
-    private int mostSouth;
-    private int mostWest;
-    private boolean built = false;
+    private int mostNorth; // y value of the most north point of the island
+    private int mostEast; // x value of the most east point of the island
+    private int mostSouth; // y value of the most south point of the island
+    private int mostWest; // x value of the most west point of the island
+    private boolean built = false; // indicates whether the map is fully built
 
     InternalMap(int limitX, int limitY) {
         this.limitX = limitX;
@@ -24,6 +24,7 @@ public class InternalMap {
         }
     }
 
+    // updates the map based on the position of the drone, the direction of the echo, and the range the echo recorded
     public void updateMap(int x, int y, int range, Direction echoDir) {
         if (echoDir == Direction.EAST) {
             for (int i = 0; i < x + range; i++) {
@@ -76,6 +77,7 @@ public class InternalMap {
         return mostWest;
     }
 
+    // returns the y value that the drone should turn at to get to the next piece of land (returns -1 if there is no more land to turn to)
     public int getNextTurn(int x, int y, Direction moving, Direction turning) {
         if (moving == Direction.NORTH) {
             if (turning == Direction.EAST) {
@@ -112,6 +114,7 @@ public class InternalMap {
         }
     }
 
+    // returns the y value of the next land to scan (returns -1 if no more land in front of the drone)
     public int nextLand(int x, int y, Direction moving) {
         if (moving == Direction.NORTH) {
             for (int i = y; i >= 0; i--) {
@@ -150,6 +153,7 @@ public class InternalMap {
         built = true;
     }
 
+    // cleans the map after build (can potentially move this to be called in the setBuilt() method)
     public void cleanMap() {
         for (int i = 0; i <= limitY; i++) {
             for (int j = 0; j < mostWest; j++) {
@@ -176,6 +180,7 @@ public class InternalMap {
         }
     }
 
+    // if true the drone should turn to the east, otherwise it should turn to the west (handles even or odd width islands)
     public boolean hasLandEast(int x) {
         for (int i = 0; i <= limitY; i++) {
             for (int j = x + 1; j <= limitX; j++) {
