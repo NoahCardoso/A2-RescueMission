@@ -2,15 +2,18 @@ package ca.mcmaster.se2aa4.island.teamXXX;
 
 import org.json.JSONObject;
 
-public class Heading extends Action
+public class Heading implements Command
 {
-	private JSONObject heading;
+	private final Direction heading;
+
 	public Heading(Direction direction){
-		String dir = direction.toString();
-		this.heading = new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", dir));
+		this.heading = direction;
 	}
-	public JSONObject getJSON(){
-		return this.heading;
+
+	@Override
+	public JSONObject execute(Drone drone){
+		drone.setDir(heading);
+		return new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", this.heading.toString()));
 	}
 		
 	

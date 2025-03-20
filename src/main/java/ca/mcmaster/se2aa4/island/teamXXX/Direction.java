@@ -5,13 +5,14 @@ enum Direction{
     EAST("E"),
     SOUTH("S"),
     WEST("W");
-    private final String message;  // Field to store the string
 
-    Direction(String message) {  // Constructor
+    private final String message; 
+
+    Direction(String message) {  
         this.message = message;
     }
 
-    public String toString() {  // Getter method
+    public String toString() {  
         return message;
     }
 

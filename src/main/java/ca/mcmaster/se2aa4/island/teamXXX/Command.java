@@ -2,8 +2,7 @@ package ca.mcmaster.se2aa4.island.teamXXX;
 
 import org.json.JSONObject;
 
-public abstract class Action
+public interface Command
 {
-	abstract JSONObject getJSON();
-	
+	JSONObject execute(Drone drone);
 }
