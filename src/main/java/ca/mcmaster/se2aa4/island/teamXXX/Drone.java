@@ -1,8 +1,8 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
-import org.json.JSONObject;
-
 import java.util.Queue;
+
+import org.json.JSONObject;
 
 class Drone{
 
@@ -33,15 +33,14 @@ class Drone{
                 sm.initializeInternalMap(this.moveQueue,this.x,this.y,this.results);
             } else if (sm.getBuildStatus() == false) {
                 sm.buildInternalMap(this.moveQueue,this.x,this.y,results,this.dir);
-            } else if (scanning == Direction.EAST) {
+            } else if (sm.getScanningDirection() == Direction.EAST) {
                 // logger.info("{}", map.displayMap());
                 // this.moveQueue.add(new JSONObject().put("action", "stop"));
-                sm.scanEast();
+                sm.scanEast(this.moveQueue,this.x,this.y,this.results,this.dir);
             } else {
-                sm.scanWest();
+                sm.scanWest(this.moveQueue,this.x,this.y,this.results,this.dir);
             }
         }
-        
 
         Action currentAction = this.moveQueue.remove();
 

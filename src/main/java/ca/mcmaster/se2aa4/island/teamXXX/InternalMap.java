@@ -58,7 +58,7 @@ public class InternalMap {
     public int getLimitX(){
         return limitX;
     }
-    
+
     public int getLimitY(){
         return limitY;
     }
@@ -103,63 +103,6 @@ public class InternalMap {
         return mostWest;
     }
 
-    // returns the y value that the drone should turn at to get to the next piece of land (returns -1 if there is no more land to turn to)
-    public int getNextTurn(int x, int y, Direction moving, Direction turning) {
-        if (moving == Direction.NORTH) {
-            if (turning == Direction.EAST) {
-                for (int i = 0; i <= limitY; i++) {
-                    if (map[i][x+2] == 1) {
-                        return i;
-                    }
-                }
-                return -1;
-            } else {
-                for (int i = 0; i <= limitY; i++) {
-                    if (map[i][x-2] == 1) {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-        } else {
-            if (turning == Direction.EAST) {
-                for (int i = limitY; i >= 0; i--) {
-                    if (map[i][x+2] == 1) {
-                        return i;
-                    }
-                }
-                return -1;
-            } else {
-                for (int i = limitY; i >= 0; i--) {
-                    if (map[i][x-2] == 1) {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-        }
-    }
-
-    //Should be removed 
-    // returns the y value of the next land to scan (returns -1 if no more land in front of the drone)
-    public int nextLand(int x, int y, Direction moving) {
-        if (moving == Direction.NORTH) {
-            for (int i = y; i >= 0; i--) {
-                if (map[i][x] == 1) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = y; i <= limitY; i++) {
-                if (map[i][x] == 1) {
-                    return i;
-                }
-            }
-        }
-
-        return -1;
-    }
-
     public String displayMap() {
         StringBuffer m = new StringBuffer();
         m.append("\n");
@@ -176,40 +119,27 @@ public class InternalMap {
     public void cleanMap() {
         for (int i = 0; i <= limitY; i++) {
             for (int j = 0; j < mostWest; j++) {
-                map[i][j] = 0;
+                map[i][j] = new OceanTile();
             }
         }
 
         for (int i = 0; i <= limitY; i++) {
             for (int j = limitX; j > mostEast; j--) {
-                map[i][j] = 0;
+                map[i][j] = new OceanTile();
             }
         }
 
         for (int i = limitY; i > mostSouth; i--) {
             for (int j = 0; j <= limitX; j++) {
-                map[i][j] = 0;
+                map[i][j] = new OceanTile();
             }
         }
 
         for (int i = 0; i < mostNorth; i++) {
             for (int j = 0; j <= limitX; j++) {
-                map[i][j] = 0;
+                map[i][j] = new OceanTile();
             }
         }
-    }
-
-    // if true the drone should turn to the east, otherwise it should turn to the west (handles even or odd width islands)
-    public boolean hasLandEast(int x) {
-        for (int i = 0; i <= limitY; i++) {
-            for (int j = x + 1; j <= limitX; j++) {
-                if (map[i][j] == 1) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
 }

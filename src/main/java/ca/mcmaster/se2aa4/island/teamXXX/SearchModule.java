@@ -8,14 +8,10 @@ public class SearchModule{
 
     private InternalMap map;
     private boolean mapIsBuilt = false;
-    JSONObject previousAction;
-    boolean landfound = false;
-    Direction scanning = Direction.EAST;
-    boolean justTurned = false;
-    Integer distance;
-
-    SearchModule(){
-    }
+    private JSONObject previousAction;
+    private boolean landfound = false;
+    private Direction scanning = Direction.EAST;
+    private Integer distance;
 
     public boolean getBuildStatus(){
         return mapIsBuilt;
@@ -146,7 +142,7 @@ public class SearchModule{
     }
 
     // moves left to right, scanning wherever the internal map has a value of 1
-    private void scanEast(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+    public void scanEast(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
         int y = nextLand(droneX, droneY, dir);
 
         if (y != -1) {
@@ -170,7 +166,7 @@ public class SearchModule{
                 }
             }
         } else {
-            y = map.getNextTurn(droneX, droneY, dir, Direction.EAST);
+            y = getNextTurn(droneX, droneY, dir, Direction.EAST);
             if (y != -1) {
                 if (dir == Direction.SOUTH) {
                     if (droneY >= y) {
@@ -188,8 +184,8 @@ public class SearchModule{
                     }
                 }
             } else {
-                if (map.hasLandEast(droneX)) {
-                    y = map.getNextTurn(droneX-1, droneY, dir, Direction.EAST);
+                if (hasLandEast(droneX)) {
+                    y = getNextTurn(droneX-1, droneY, dir, Direction.EAST);
                     if (dir == Direction.SOUTH) {
                         if (droneY >= y) {
                             moveQueue.add(new Heading(Direction.WEST));
@@ -218,7 +214,7 @@ public class SearchModule{
                         }
                     }
                 } else {
-                    y = map.getNextTurn(droneX+1, droneY, dir, Direction.WEST);
+                    y = getNextTurn(droneX+1, droneY, dir, Direction.WEST);
                     if (dir == Direction.SOUTH) {
                         if (droneY >= y) {
                             moveQueue.add(new Heading(Direction.WEST));
@@ -252,8 +248,8 @@ public class SearchModule{
     }
 
 
-    private void scanWest(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
-        int y = map.nextLand(droneX, droneY, dir);
+    public void scanWest(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+        int y = nextLand(droneX, droneY, dir);
 
         if (y != -1) {
             if (dir == Direction.SOUTH) {
@@ -276,7 +272,7 @@ public class SearchModule{
                 }
             }
         } else {
-            y = map.getNextTurn(droneX, droneY, dir, Direction.WEST);
+            y = getNextTurn(droneX, droneY, dir, Direction.WEST);
             if (y != -1) {
                 if (dir == Direction.SOUTH) {
                     if (droneY >= y) {
@@ -295,6 +291,43 @@ public class SearchModule{
                 }
             } else {
                 moveQueue.add(new Stop());
+            }
+        }
+    }
+
+    // returns the y value that the drone should turn at to get to the next piece of land (returns -1 if there is no more land to turn to)
+    public int getNextTurn(int x, int y, Direction moving, Direction turning) {
+        if (moving == Direction.NORTH) {
+            if (turning == Direction.EAST) {
+                for (int i = 0; i <= map.getLimitY(); i++) {
+                    if (map.getTile(i, x+2).getTileType() == TileType.LAND) {
+                        return i;
+                    }
+                }
+                return -1;
+            } else {
+                for (int i = 0; i <= map.getLimitY(); i++) {
+                    if (map.getTile(i, x-2).getTileType() == TileType.LAND) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        } else {
+            if (turning == Direction.EAST) {
+                for (int i = map.getLimitY(); i >= 0; i--) {
+                    if (map.getTile(i, x+2).getTileType() == TileType.LAND) {
+                        return i;
+                    }
+                }
+                return -1;
+            } else {
+                for (int i = map.getLimitY(); i >= 0; i--) {
+                    if (map.getTile(i, x-2).getTileType() == TileType.LAND) {
+                        return i;
+                    }
+                }
+                return -1;
             }
         }
     }
@@ -318,5 +351,21 @@ public class SearchModule{
         return -1;
     }
 
+    // if true the drone should turn to the east, otherwise it should turn to the west (handles even or odd width islands)
+    public boolean hasLandEast(int x) {
+        for (int i = 0; i <= map.getLimitY(); i++) {
+            for (int j = x + 1; j <= map.getLimitX(); j++) {
+                if (map.getTile(i, j).getTileType() == TileType.LAND) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public Direction getScanningDirection(){
+        return this.scanning;
+    }
 
 }
