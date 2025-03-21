@@ -12,7 +12,6 @@ public class InternalMap {
     private int mostEast; // x value of the most east point of the island
     private int mostSouth; // y value of the most south point of the island
     private int mostWest; // x value of the most west point of the island
-    private boolean built = false; // indicates whether the map is fully built
 
     InternalMap(int limitX, int limitY) {
         this.limitX = limitX;
@@ -28,22 +27,41 @@ public class InternalMap {
 
     // updates the map based on the position of the drone, the direction of the echo, and the range the echo recorded
     public void updateMap(int x, int y, int range, Direction echoDir) {
-        if (echoDir == Direction.EAST) {
-            for (int i = 0; i < x + range; i++) {
-                map[y][i] = 0;
-            }
-        } else if (echoDir == Direction.SOUTH) {
-            for (int i = 0; i < y + range; i++) {
-                map[i][x] = 0;
-            }
-        } else if (echoDir == Direction.WEST) {
-            for (int i = 0; i < limitX - x + range; i++) {
-                map[y][limitX-i] = 0;
-            }
-        } else {
+        if (null == echoDir) {
             for (int i = 0; i < limitY - y + range; i++) {
                 map[limitY-i][x] = 0;
             }
+        } else switch (echoDir) {
+            case EAST -> {
+                for (int i = 0; i < x + range; i++) {
+                    map[y][i] = 0;
+                }
+            }
+            case SOUTH -> {
+                for (int i = 0; i < y + range; i++) {
+                    map[i][x] = 0;
+                }
+            }
+            case WEST -> {
+                for (int i = 0; i < limitX - x + range; i++) {
+                    map[y][limitX-i] = 0;
+                }
+            }
+            default -> {
+                for (int i = 0; i < limitY - y + range; i++) {
+                    map[limitY-i][x] = 0;
+                }
+            }
+        }
+    }
+
+    public int getTile(int x,int y){
+
+        try {
+            return map[x][y];
+
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -116,6 +134,7 @@ public class InternalMap {
         }
     }
 
+    //Should be removed 
     // returns the y value of the next land to scan (returns -1 if no more land in front of the drone)
     public int nextLand(int x, int y, Direction moving) {
         if (moving == Direction.NORTH) {
@@ -145,14 +164,6 @@ public class InternalMap {
         }
 
         return m.toString();
-    }
-
-    public boolean isBuilt() {
-        return built;
-    }
-
-    public void setBuilt() {
-        built = true;
     }
 
     // cleans the map after build (can potentially move this to be called in the setBuilt() method)

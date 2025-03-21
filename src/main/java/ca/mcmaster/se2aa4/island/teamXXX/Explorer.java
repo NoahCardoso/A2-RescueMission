@@ -30,7 +30,6 @@ public class Explorer implements IExplorerRaid {
     private boolean foundC = false;
     private boolean overOcean = false;
     private int triggerTurn = 0;
-    private Drone drone = new Drone(100000,direction.NORTH);
     private POIProcessor processor = new POIProcessor();
 
     @Override
@@ -44,7 +43,6 @@ public class Explorer implements IExplorerRaid {
         drone = new Drone(batteryLevel, Direction.EAST);
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
-        this.droneController = new DroneController(drone);
     }
 
     @Override
@@ -76,7 +74,7 @@ public class Explorer implements IExplorerRaid {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
-        droneController.setInfo(extraInfo);
+        drone.setInfo(extraInfo);
         logger.info("Additional information received: {}", extraInfo);
         logger.info("Battery: {}", drone.getBattery());
         logger.info("X: {}", drone.getX());

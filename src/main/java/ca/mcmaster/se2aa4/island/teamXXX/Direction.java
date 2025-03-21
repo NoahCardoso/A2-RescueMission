@@ -15,4 +15,20 @@ enum Direction{
         return message;
     }
 
+    static public Direction fromString(String dir) {
+        switch (dir) {
+            case "N":
+                return Direction.NORTH;
+            case "E":
+                return Direction.EAST;
+            case "S":
+                return Direction.SOUTH;
+            default:
+                break;
+        }
+        return Direction.WEST;
+
+
+    }
+
 }

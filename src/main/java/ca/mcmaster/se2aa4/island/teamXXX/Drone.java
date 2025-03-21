@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
 import org.json.JSONObject;
+
 import java.util.Queue;
 
 class Drone{
@@ -12,18 +13,16 @@ class Drone{
     private Direction dir;
     private int lastScan = 0;
 
-    Queue<Action> moveQueue;
+    private Queue<Action> moveQueue;
     private Action previousAction;
 
     private SearchModule sm;
+    private JSONObject results;
 
     Drone(int battery, Direction dir){
         this.battery = battery;
         this.dir = dir;
         this.sm = new SearchModule();
-
-
-
     }
 
     public JSONObject getNextMove(){
@@ -31,9 +30,9 @@ class Drone{
         
         if(moveQueue.isEmpty()){
             if (sm.getInitializeStatus() == false) {
-                sm.initializeInternalMap();
+                sm.initializeInternalMap(this.moveQueue,this.x,this.y,this.results);
             } else if (sm.getBuildStatus() == false) {
-                sm.buildInternalMap();
+                sm.buildInternalMap(this.moveQueue,this.x,this.y,results,this.dir);
             } else if (scanning == Direction.EAST) {
                 // logger.info("{}", map.displayMap());
                 // this.moveQueue.add(new JSONObject().put("action", "stop"));
@@ -45,9 +44,20 @@ class Drone{
         
 
         Action currentAction = this.moveQueue.remove();
+
+        if(currentAction instanceof Fly){
+            fly();
+        }else if(currentAction instanceof Heading){
+            heading(Direction.fromString(currentAction.getJSON().getString("direction")));
+
+        }
         
         this.previousAction = currentAction;
         return currentAction.getJSON();
+    }
+
+    public void updateResults(JSONObject info){
+        this.results = info;
     }
 
     public void setBattery(int battery){
@@ -105,6 +115,12 @@ class Drone{
 
     public void decreaseBattery(int bat){
         this.battery -= bat;
+    }
+
+    public void heading(Direction dir){
+        fly();
+        setDir(dir);
+        fly();
     }
 
     public void fly(){
