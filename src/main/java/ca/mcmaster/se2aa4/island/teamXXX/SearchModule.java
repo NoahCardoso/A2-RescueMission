@@ -294,7 +294,7 @@ public class SearchModule{
                     }
                 }
             } else {
-                this.moveQueue.add(new JSONObject().put("action", "stop"));
+                moveQueue.add(new Stop());
             }
         }
     }
