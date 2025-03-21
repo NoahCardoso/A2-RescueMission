@@ -146,136 +146,104 @@ public class SearchModule{
     }
 
     // moves left to right, scanning wherever the internal map has a value of 1
-    private void scanEast(Queue<Action> moveQueue,int x, int y,JSONObject info, Direction dir) {
-        int y = map.nextLand(x, y, dir);
+    private void scanEast(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+        int y = nextLand(droneX, droneY, dir);
 
         if (y != -1) {
-            if (drone.getDir() == Direction.SOUTH) {
-                if (drone.getY() < y) {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
-                } else if (drone.getY() == y) {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "scan"));
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
+            if (dir == Direction.SOUTH) {
+                if (droneY < y) {
+                    moveQueue.add(new Fly());
+                } else if (droneY == y) {
+                    moveQueue.add(new Scan());
+                    moveQueue.add(new Fly());
                 } else {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
+                    moveQueue.add(new Fly());
                 }
             } else {
-                if (drone.getY() > y) {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
-                } else if (drone.getY() == y) {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "scan"));
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
+                if (droneY > y) {
+                    moveQueue.add(new Fly());
+                } else if (droneY == y) {
+                    moveQueue.add(new Scan());
+                    moveQueue.add(new Fly());
                 } else {
-                    drone.fly();
-                    this.moveQueue.add(new JSONObject().put("action", "fly"));
+                    moveQueue.add(new Fly());
                 }
             }
         } else {
-            y = map.getNextTurn(drone.getX(), drone.getY(), drone.getDir(), Direction.EAST);
+            y = map.getNextTurn(droneX, droneY, dir, Direction.EAST);
             if (y != -1) {
-                if (drone.getDir() == Direction.SOUTH) {
-                    if (drone.getY() >= y) {
-                        this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                        drone.setDir(Direction.EAST);
-                        drone.fly();
-                        drone.fly();
-                        this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                        drone.setDir(Direction.NORTH);
+                if (dir == Direction.SOUTH) {
+                    if (droneY >= y) {
+                        moveQueue.add(new Heading(Direction.EAST));
+                        moveQueue.add(new Heading(Direction.NORTH));
                     } else {
-                        drone.fly();
-                        this.moveQueue.add(new JSONObject().put("action", "fly"));
+                        moveQueue.add(new Fly());
                     }
                 } else {
-                    if (drone.getY() <= y) {
-                        this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                        drone.setDir(Direction.EAST);
-                        drone.fly();
-                        drone.fly();
-                        this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                        drone.setDir(Direction.SOUTH);
+                    if (droneY <= y) {
+                        moveQueue.add(new Heading(Direction.EAST));
+                        moveQueue.add(new Heading(Direction.SOUTH));
                     } else {
-                        drone.fly();
-                        this.moveQueue.add(new JSONObject().put("action", "fly"));
+                        moveQueue.add(new Fly());
                     }
                 }
             } else {
-                if (map.hasLandEast(drone.getX())) {
-                    y = map.getNextTurn(drone.getX()-1, drone.getY(), drone.getDir(), Direction.EAST);
-                    if (drone.getDir() == Direction.SOUTH) {
-                        if (drone.getY() >= y) {
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            drone.setDir(Direction.EAST);
-                            drone.fly();
-                            drone.setDir(Direction.NORTH);
+                if (map.hasLandEast(droneX)) {
+                    y = map.getNextTurn(droneX-1, droneY, dir, Direction.EAST);
+                    if (dir == Direction.SOUTH) {
+                        if (droneY >= y) {
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Fly());
+                            moveQueue.add(new Heading(Direction.NORTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Heading(Direction.SOUTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Heading(Direction.NORTH));
                             scanning = Direction.WEST;
                         } else {
-                            drone.fly();
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
+                            moveQueue.add(new Fly());
                         }
                     } else {
-                        if (drone.getY() <= y) {
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            drone.setDir(Direction.EAST);
-                            drone.fly();
-                            drone.setDir(Direction.SOUTH);
+                        if (droneY <= y) {
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Fly());
+                            moveQueue.add(new Heading(Direction.SOUTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Heading(Direction.NORTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Heading(Direction.SOUTH));
                             scanning = Direction.WEST;
                         } else {
-                            drone.fly();
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
+                            moveQueue.add(new Fly());
                         }
                     }
                 } else {
-                    y = map.getNextTurn(drone.getX()+1, drone.getY(), drone.getDir(), Direction.WEST);
-                    if (drone.getDir() == Direction.SOUTH) {
-                        if (drone.getY() >= y) {
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            drone.setDir(Direction.WEST);
-                            drone.fly();
-                            drone.setDir(Direction.NORTH);
+                    y = map.getNextTurn(droneX+1, droneY, dir, Direction.WEST);
+                    if (dir == Direction.SOUTH) {
+                        if (droneY >= y) {
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Heading(Direction.NORTH));
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Heading(Direction.SOUTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Fly());
+                            moveQueue.add(new Heading(Direction.NORTH));
                             scanning = Direction.WEST;
                         } else {
-                            drone.fly();
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
+                            moveQueue.add(new Fly());
                         }
                     } else {
-                        if (drone.getY() <= y) {
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "W")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "N")));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "E")));
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
-                            this.moveQueue.add(new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", "S")));
-                            drone.setDir(Direction.WEST);
-                            drone.fly();
-                            drone.setDir(Direction.SOUTH);
+                        if (droneY <= y) {
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Heading(Direction.SOUTH));
+                            moveQueue.add(new Heading(Direction.WEST));
+                            moveQueue.add(new Heading(Direction.NORTH));
+                            moveQueue.add(new Heading(Direction.EAST));
+                            moveQueue.add(new Fly());
+                            moveQueue.add(new Heading(Direction.SOUTH));
                             scanning = Direction.WEST;
                         } else {
-                            drone.fly();
-                            this.moveQueue.add(new JSONObject().put("action", "fly"));
+                            moveQueue.add(new Fly());
                         }
                     }
                 }
@@ -284,19 +252,64 @@ public class SearchModule{
     }
 
 
+    private void scanWest(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+        int y = map.nextLand(droneX, droneY, dir);
 
+        if (y != -1) {
+            if (dir == Direction.SOUTH) {
+                if (droneY < y) {
+                    moveQueue.add(new Fly());
+                } else if (droneY == y) {
+                    moveQueue.add(new Scan());
+                    moveQueue.add(new Fly());
+                } else {
+                    moveQueue.add(new Fly());
+                }
+            } else {
+                if (droneY > y) {
+                    moveQueue.add(new Fly());
+                } else if (droneY == y) {
+                    moveQueue.add(new Scan());
+                    moveQueue.add(new Fly());
+                } else {
+                    moveQueue.add(new Fly());
+                }
+            }
+        } else {
+            y = map.getNextTurn(droneX, droneY, dir, Direction.WEST);
+            if (y != -1) {
+                if (dir == Direction.SOUTH) {
+                    if (droneY >= y) {
+                        moveQueue.add(new Heading(Direction.WEST));
+                        moveQueue.add(new Heading(Direction.NORTH));
+                    } else {
+                        moveQueue.add(new Fly());
+                    }
+                } else {
+                    if (droneY <= y) {
+                        moveQueue.add(new Heading(Direction.WEST));
+                        moveQueue.add(new Heading(Direction.SOUTH));
+                    } else {
+                        moveQueue.add(new Fly());
+                    }
+                }
+            } else {
+                this.moveQueue.add(new JSONObject().put("action", "stop"));
+            }
+        }
+    }
 
     // returns the y value of the next land to scan (returns -1 if no more land in front of the drone)
     private int nextLand(int x, int y, Direction moving) {
         if (moving == Direction.NORTH) {
             for (int i = y; i >= 0; i--) {
-                if (map[i][x] == 1) {
+                if (map.getTile(i,x).getTileType() == TileType.LAND) {
                     return i;
                 }
             }
         } else {
-            for (int i = y; i <= limitY; i++) {
-                if (map[i][x] == 1) {
+            for (int i = y; i <= map.getLimitY(); i++) {
+                if (map.getTile(i,x).getTileType() == TileType.LAND) {
                     return i;
                 }
             }
@@ -304,4 +317,6 @@ public class SearchModule{
 
         return -1;
     }
+
+
 }

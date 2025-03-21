@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class InternalMap {
     private final int limitX;
     private final int limitY;
-    private int[][] map;
+    private Tile[][] map;
     private int mostNorth; // y value of the most north point of the island
     private int mostEast; // x value of the most east point of the island
     private int mostSouth; // y value of the most south point of the island
@@ -16,11 +16,11 @@ public class InternalMap {
     InternalMap(int limitX, int limitY) {
         this.limitX = limitX;
         this.limitY = limitY;
-        map = new int[limitY+1][limitX+1];
+        map = new Tile[limitY+1][limitX+1];
         
         for (int i = 0; i <= limitY; i++) {
             for (int j = 0; j <= limitX; j++) {
-                map[i][j] = 1;
+                map[i][j] = new OceanTile();
             }
         }
     }
@@ -29,39 +29,45 @@ public class InternalMap {
     public void updateMap(int x, int y, int range, Direction echoDir) {
         if (null == echoDir) {
             for (int i = 0; i < limitY - y + range; i++) {
-                map[limitY-i][x] = 0;
+                map[limitY-i][x] = new LandTile();
             }
         } else switch (echoDir) {
             case EAST -> {
                 for (int i = 0; i < x + range; i++) {
-                    map[y][i] = 0;
+                    map[y][i] = new OceanTile();
                 }
             }
             case SOUTH -> {
                 for (int i = 0; i < y + range; i++) {
-                    map[i][x] = 0;
+                    map[i][x] = new OceanTile();
                 }
             }
             case WEST -> {
                 for (int i = 0; i < limitX - x + range; i++) {
-                    map[y][limitX-i] = 0;
+                    map[y][limitX-i] = new OceanTile();
                 }
             }
             default -> {
                 for (int i = 0; i < limitY - y + range; i++) {
-                    map[limitY-i][x] = 0;
+                    map[limitY-i][x] = new OceanTile();
                 }
             }
         }
     }
 
-    public int getTile(int x,int y){
+    public int getLimitX(){
+        return limitX;
+    }
+    
+    public int getLimitY(){
+        return limitY;
+    }
 
+    public Tile getTile(int x,int y){
         try {
             return map[x][y];
-
         } catch (Exception e) {
-            return -1;
+            return new UnknownTile();
         }
     }
 

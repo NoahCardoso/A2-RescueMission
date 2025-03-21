@@ -5,17 +5,13 @@ import org.json.JSONObject;
 public class Heading extends Action
 {
 	private JSONObject heading;
-	private Direction dir;
-	
 	public Heading(Direction direction){
-		this.dir = direction;
-		this.heading = new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", direction.toString()));
+		String dir = direction.toString();
+		this.heading = new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", dir));
 	}
 	public JSONObject getJSON(){
 		return this.heading;
 	}
-	public Direction getDirection(){
-		return this.dir;
-	}
+		
 	
 }

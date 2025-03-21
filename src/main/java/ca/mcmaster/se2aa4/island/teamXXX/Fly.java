@@ -11,6 +11,5 @@ public class Fly extends Action
 	public JSONObject getJSON(){
 		return this.fly;
 	}
-		
 	
 }

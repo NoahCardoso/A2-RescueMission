@@ -49,7 +49,6 @@ class Drone{
             fly();
         }else if(currentAction instanceof Heading){
             heading(Direction.fromString(currentAction.getJSON().getString("direction")));
-
         }
         
         this.previousAction = currentAction;

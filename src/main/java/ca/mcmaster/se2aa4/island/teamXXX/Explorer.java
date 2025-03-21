@@ -74,7 +74,7 @@ public class Explorer implements IExplorerRaid {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
-        drone.setInfo(extraInfo);
+        drone.updateResults(extraInfo);
         logger.info("Additional information received: {}", extraInfo);
         logger.info("Battery: {}", drone.getBattery());
         logger.info("X: {}", drone.getX());
