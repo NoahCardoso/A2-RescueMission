@@ -2,6 +2,8 @@ package ca.mcmaster.se2aa4.island.teamXXX;
 
 import java.util.Arrays;
 
+
+//Map Module
 public class InternalMap {
     private final int limitX;
     private final int limitY;

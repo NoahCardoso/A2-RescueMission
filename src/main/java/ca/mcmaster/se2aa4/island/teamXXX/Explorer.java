@@ -1,12 +1,9 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -33,9 +30,8 @@ public class Explorer implements IExplorerRaid {
     private boolean foundC = false;
     private boolean overOcean = false;
     private int triggerTurn = 0;
-    private DroneController droneController;
-    private POI creeks = new POI("creek");
-    private POI sites = new POI("site");
+    private Drone drone = new Drone(100000,direction.NORTH);
+    private POIProcessor processor = new POIProcessor();
 
     @Override
     public void initialize(String s) {
@@ -54,16 +50,16 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
         
-        JSONObject decision = droneController.getNextMove();
+        JSONObject decision = drone.getNextMove();
 
         logger.info("** Decision: {}",decision.toString());
         if (decision.getString("action").equals("stop")) {
-            logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
-            logger.info("** Locations: {}", creeks.getAllPOILocations());
-            logger.info("** Sites: {}", sites.getAllPOIs().toString());
-            logger.info("** Internal Map: {}", droneController.map.displayMap());
-            logger.info("{}", droneController.map.getNorth());
-            logger.info("{}", droneController.map.getSouth());
+            //logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
+            //logger.info("** Locations: {}", creeks.getAllPOILocations());
+            //logger.info("** Sites: {}", sites.getAllPOIs().toString());
+            //logger.info("** Internal Map: {}", droneController.map.displayMap());
+            //logger.info("{}", droneController.map.getNorth());
+            //logger.info("{}", droneController.map.getSouth());
         }
 
         return decision.toString();
@@ -91,18 +87,19 @@ public class Explorer implements IExplorerRaid {
     private void logData(JSONObject data) {
         if (data.has("creeks")) {
             if (data.getJSONArray("creeks").length() >= 1) {
-                creeks.addPOI(data.getJSONArray("creeks").getString(0), drone.getX(), drone.getY());
+                processor.addCreek(data.getJSONArray("creeks").getString(0), drone.getX(), drone.getY());
             }
         }
         if (data.has("sites")) {
             if (data.getJSONArray("sites").length() >= 1) {
-                sites.addPOI(data.getJSONArray("sites").getString(0), drone.getX(), drone.getY());
+                processor.addEmergencySite(data.getJSONArray("sites").getString(0), drone.getX(), drone.getY());
             }
         }
     }
 
     @Override
     public String deliverFinalReport() {
+        System.out.println(processor.getClosestPOI());
         return "no creek found";
     }
 

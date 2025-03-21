@@ -1,5 +1,8 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
+import org.json.JSONObject;
+import java.util.Queue;
+
 class Drone{
 
     private int x = 0;
@@ -9,13 +12,42 @@ class Drone{
     private Direction dir;
     private int lastScan = 0;
 
-    //Not used yet
-    private POI creek = new POI("creek");
-    private POI eSite = new POI("Emergency Site");
+    Queue<Action> moveQueue;
+    private Action previousAction;
+
+    private SearchModule sm;
 
     Drone(int battery, Direction dir){
         this.battery = battery;
         this.dir = dir;
+        this.sm = new SearchModule();
+
+
+
+    }
+
+    public JSONObject getNextMove(){
+
+        
+        if(moveQueue.isEmpty()){
+            if (sm.getInitializeStatus() == false) {
+                sm.initializeInternalMap();
+            } else if (sm.getBuildStatus() == false) {
+                sm.buildInternalMap();
+            } else if (scanning == Direction.EAST) {
+                // logger.info("{}", map.displayMap());
+                // this.moveQueue.add(new JSONObject().put("action", "stop"));
+                sm.scanEast();
+            } else {
+                sm.scanWest();
+            }
+        }
+        
+
+        Action currentAction = this.moveQueue.remove();
+        
+        this.previousAction = currentAction;
+        return currentAction.getJSON();
     }
 
     public void setBattery(int battery){
