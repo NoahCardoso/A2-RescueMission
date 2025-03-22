@@ -12,7 +12,9 @@ public class Heading implements Command
 
 	@Override
 	public JSONObject execute(Drone drone){
+		drone.fly();
 		drone.setDir(heading);
+		drone.fly();
 		return new JSONObject().put("action", "heading").put("parameters", new JSONObject().put("direction", this.heading.toString()));
 	}
 		

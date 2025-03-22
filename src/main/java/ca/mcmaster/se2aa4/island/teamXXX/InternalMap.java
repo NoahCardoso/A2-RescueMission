@@ -20,18 +20,14 @@ public class InternalMap {
         
         for (int i = 0; i <= limitY; i++) {
             for (int j = 0; j <= limitX; j++) {
-                map[i][j] = new OceanTile();
+                map[i][j] = new LandTile();
             }
         }
     }
 
     // updates the map based on the position of the drone, the direction of the echo, and the range the echo recorded
     public void updateMap(int x, int y, int range, Direction echoDir) {
-        if (null == echoDir) {
-            for (int i = 0; i < limitY - y + range; i++) {
-                map[limitY-i][x] = new LandTile();
-            }
-        } else switch (echoDir) {
+        switch (echoDir) {
             case EAST -> {
                 for (int i = 0; i < x + range; i++) {
                     map[y][i] = new OceanTile();
