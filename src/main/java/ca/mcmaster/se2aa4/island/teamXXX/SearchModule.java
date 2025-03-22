@@ -8,7 +8,7 @@ public class SearchModule{
 
     private InternalMap map;
     private boolean mapIsBuilt = false;
-    private JSONObject previousAction;
+    private Command previousAction;
     private boolean landfound = false;
     private Direction scanning = Direction.EAST;
     private Integer distance;
@@ -24,9 +24,11 @@ public class SearchModule{
 
         return true;
     }
-
+    public void setPreviousAction(Command c){
+        this.previousAction = c;
+    }
     // scans east and south, then initializes a map with those values
-    public void initializeInternalMap(Queue<Action> moveQueue,int x, int y, JSONObject info) {
+    public void initializeInternalMap(Queue<Command> moveQueue,int x, int y, JSONObject info) {
         if (map == null && previousAction == null) {
             moveQueue.add(new Echo(Direction.EAST));
         } else if (map == null && distance == null) {
@@ -40,7 +42,7 @@ public class SearchModule{
         }
     }
 
-    public void buildInternalMap(Queue<Action> moveQueue,int x, int y,JSONObject info, Direction dir) {
+    public void buildInternalMap(Queue<Command> moveQueue,int x, int y,JSONObject info, Direction dir) {
         if (landfound == false && dir == Direction.EAST) {
             if (info.getString("found").equals("GROUND")) {
                 landfound = true;
@@ -142,7 +144,7 @@ public class SearchModule{
     }
 
     // moves left to right, scanning wherever the internal map has a value of 1
-    public void scanEast(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+    public void scanEast(Queue<Command> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
         int y = nextLand(droneX, droneY, dir);
 
         if (y != -1) {
@@ -248,7 +250,7 @@ public class SearchModule{
     }
 
 
-    public void scanWest(Queue<Action> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
+    public void scanWest(Queue<Command> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
         int y = nextLand(droneX, droneY, dir);
 
         if (y != -1) {

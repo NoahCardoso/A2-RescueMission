@@ -13,6 +13,7 @@ public class Echo implements Command
 
 	@Override
 	public JSONObject execute(Drone drone){
+		
 		return (new JSONObject().put("action", "echo").put("parameters", new JSONObject().put("direction", this.direction.toString())));
 	}
 		

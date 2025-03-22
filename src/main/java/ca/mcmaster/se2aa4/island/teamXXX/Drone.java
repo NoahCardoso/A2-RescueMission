@@ -1,10 +1,11 @@
 package ca.mcmaster.se2aa4.island.teamXXX;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 import org.json.JSONObject;
 
-class Drone{
+class Drone implements CommandQueue{
 
     private int x = 0;
     private int y = 0;
@@ -13,9 +14,7 @@ class Drone{
     private Direction dir;
     private int lastScan = 0;
 
-    private Queue<Action> moveQueue;
-    private Action previousAction;
-
+    private Queue<Command> moveQueue;
     private SearchModule sm;
     private JSONObject results;
 
@@ -23,8 +22,10 @@ class Drone{
         this.battery = battery;
         this.dir = dir;
         this.sm = new SearchModule();
+        this.moveQueue = new LinkedList<>();
     }
 
+    @Override
     public JSONObject getNextMove(){
 
         
@@ -42,16 +43,10 @@ class Drone{
             }
         }
 
-        Action currentAction = this.moveQueue.remove();
-
-        if(currentAction instanceof Fly){
-            fly();
-        }else if(currentAction instanceof Heading){
-            heading(Direction.fromString(currentAction.getJSON().getString("direction")));
-        }
+        Command currentAction = this.moveQueue.poll();
         
-        this.previousAction = currentAction;
-        return currentAction.getJSON();
+        sm.setPreviousAction(currentAction);
+        return currentAction.execute(this);
     }
 
     public void updateResults(JSONObject info){

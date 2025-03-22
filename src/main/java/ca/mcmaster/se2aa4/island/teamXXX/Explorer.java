@@ -12,23 +12,11 @@ import eu.ace_design.island.bot.IExplorerRaid;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
+    private CommandQueue queue;
     private Drone drone;
     private JSONObject result = null;
     private String direction = null;
-    private int x = 1;
-    private int y = 1;
-    private int limitX = 0;
-    private int limitY = 0;
-    private int dstX = 0;
-    private int dstY = 0;
-    private char dir = 'E';
-    private int n = 0;
-    private boolean echo = true;
-    private String[] actions = {"scan", "echo", "fly", "heading"};
-    private int action = -1;
-    private boolean foundE = false;
-    private boolean foundC = false;
-    private boolean overOcean = false;
+
     private int triggerTurn = 0;
     private POIProcessor processor = new POIProcessor();
 
@@ -40,7 +28,8 @@ public class Explorer implements IExplorerRaid {
         String direction = info.getString("heading");
         
         Integer batteryLevel = info.getInt("budget");
-        drone = new Drone(batteryLevel, Direction.EAST);
+        this.drone = new Drone(batteryLevel, Direction.EAST);
+        
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
