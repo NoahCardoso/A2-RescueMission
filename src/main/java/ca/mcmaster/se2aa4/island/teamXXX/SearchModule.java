@@ -27,7 +27,8 @@ public class SearchModule{
     public void setPreviousAction(Command c){
         this.previousAction = c;
     }
-    // scans east and south, then initializes a map with those values
+
+    // echos east and south, then initializes a map with those values
     public void initializeInternalMap(Queue<Command> moveQueue,int x, int y, JSONObject info) {
         if (map == null && previousAction == null) {
             moveQueue.add(new Echo(Direction.EAST));
@@ -43,7 +44,7 @@ public class SearchModule{
     }
 
     public void buildInternalMap(Queue<Command> moveQueue,int x, int y,JSONObject info, Direction dir) {
-        if (landfound == false && dir == Direction.EAST) {
+        if (landfound == false && dir == Direction.EAST) { // move east until the drone is north of a piece of land
             if (info.getString("found").equals("GROUND")) {
                 landfound = true;
                 map.setWest(x);
@@ -53,7 +54,7 @@ public class SearchModule{
             moveQueue.add(new Fly());
             moveQueue.add(new Echo(Direction.SOUTH));
 
-        } else if (landfound == true && dir == Direction.EAST) {
+        } else if (landfound == true && dir == Direction.EAST) { // move east and update the internal map until drone is no longer north of land
             if (info.getString("found").equals("OUT_OF_RANGE")) {
                 landfound = false;
                 moveQueue.add(new Heading(Direction.SOUTH));
@@ -66,7 +67,7 @@ public class SearchModule{
                 moveQueue.add(new Fly());
                 moveQueue.add(new Echo(Direction.SOUTH));
             }
-        } else if (dir == Direction.SOUTH) {
+        } else if (dir == Direction.SOUTH) { // move south and update the internal map until drone is no longer east of land
             if (y < map.getNorth() - 1) {
                 moveQueue.add(new Fly());
             } else if (landfound == false) {
@@ -90,7 +91,7 @@ public class SearchModule{
                         moveQueue.add(new Echo(Direction.WEST));
                 }
             }
-        } else if (dir == Direction.WEST) {
+        } else if (dir == Direction.WEST) { // move west and update the internal map until drone is no longer south of land
             if (x > map.getEast() + 1) {
                 moveQueue.add(new Fly());
             } else if (landfound == false) {
@@ -114,7 +115,7 @@ public class SearchModule{
                     moveQueue.add(new Echo(Direction.NORTH));
                 }
             }
-        } else {
+        } else { // move north and update the internal map until drone is no longer west of land
             if (y > map.getSouth() + 1) {
                 moveQueue.add(new Fly());
             } else if (landfound == false) {
@@ -143,11 +144,11 @@ public class SearchModule{
         }
     }
 
-    // moves left to right, scanning wherever the internal map has a value of 1
+    // moves left to right, scanning wherever the internal map has a land tile
     public void scanEast(Queue<Command> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
         int y = nextLand(droneX, droneY, dir);
 
-        if (y != -1) {
+        if (y != -1) { // land is found infront of the drone
             if (dir == Direction.SOUTH) {
                 if (droneY < y) {
                     moveQueue.add(new Fly());
@@ -167,9 +168,9 @@ public class SearchModule{
                     moveQueue.add(new Fly());
                 }
             }
-        } else {
+        } else { // no more land is in front of the drone
             y = getNextTurn(droneX, droneY, dir, Direction.EAST);
-            if (y != -1) {
+            if (y != -1) { // the drone has a valid peice of land to the east (not at the end of the island)
                 if (dir == Direction.SOUTH) {
                     if (droneY >= y) {
                         moveQueue.add(new Heading(Direction.EAST));
@@ -186,7 +187,7 @@ public class SearchModule{
                     }
                 }
             } else {
-                if (hasLandEast(droneX)) {
+                if (hasLandEast(droneX)) { // determines if the drone should turn east or west according to the drone position and the internal map
                     y = getNextTurn(droneX-1, droneY, dir, Direction.EAST);
                     if (dir == Direction.SOUTH) {
                         if (droneY >= y) {
@@ -249,7 +250,7 @@ public class SearchModule{
         }
     }
 
-
+    // moves right to left, scanning wherever the internal map has a land tile
     public void scanWest(Queue<Command> moveQueue,int droneX, int droneY,JSONObject info, Direction dir) {
         int y = nextLand(droneX, droneY, dir);
 

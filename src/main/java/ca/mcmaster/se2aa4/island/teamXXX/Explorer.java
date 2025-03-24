@@ -55,9 +55,6 @@ public class Explorer implements IExplorerRaid {
         drone.updateResults(extraInfo);
 
         logData(extraInfo);
-        // if (drone.sm.map != null) {
-        //     logger.info("{}", drone.sm.map.displayMap());
-        // }
     }
 
     private void logData(JSONObject data) {
