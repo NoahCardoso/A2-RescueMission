@@ -12,12 +12,10 @@ import eu.ace_design.island.bot.IExplorerRaid;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-    private CommandQueue queue;
+
     private Drone drone;
     private JSONObject result = null;
-    private String direction = null;
 
-    private int triggerTurn = 0;
     private POIProcessor processor = new POIProcessor();
 
     @Override
@@ -38,36 +36,24 @@ public class Explorer implements IExplorerRaid {
     public String takeDecision() {
         
         JSONObject decision = drone.getNextMove();
-
-        logger.info("** Decision: {}",decision.toString());
-        if (decision.getString("action").equals("stop")) {
-            //logger.info("** Creeks: {}", creeks.getAllPOIs().toString());
-            //logger.info("** Locations: {}", creeks.getAllPOILocations());
-            //logger.info("** Sites: {}", sites.getAllPOIs().toString());
-            //logger.info("** Internal Map: {}", droneController.map.displayMap());
-            //logger.info("{}", droneController.map.getNorth());
-            //logger.info("{}", droneController.map.getSouth());
-        }
+        
 
         return decision.toString();
+        
+        
     }
 
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
         this.result = response;
-        logger.info("** Response received:\n"+response.toString(2));
+        
         Integer cost = response.getInt("cost");
         drone.setBattery(drone.getBattery()-cost);
-        logger.info("The cost of the action was {}", cost);
-        String status = response.getString("status");
-        logger.info("The status of the drone is {}", status);
+      
         JSONObject extraInfo = response.getJSONObject("extras");
         drone.updateResults(extraInfo);
-        logger.info("Additional information received: {}", extraInfo);
-        logger.info("Battery: {}", drone.getBattery());
-        logger.info("X: {}", drone.getX());
-        logger.info("Y: {}", drone.getY());
+
         logData(extraInfo);
         // if (drone.sm.map != null) {
         //     logger.info("{}", drone.sm.map.displayMap());
@@ -85,12 +71,13 @@ public class Explorer implements IExplorerRaid {
                 processor.addEmergencySite(data.getJSONArray("sites").getString(0), drone.getX(), drone.getY());
             }
         }
+        
     }
 
     @Override
     public String deliverFinalReport() {
-        System.out.println(processor.getClosestPOI());
-        return "no creek found";
+        logger.info("** Closest POI: {}", processor.getClosestPOI());
+        return "";
     }
 
 }

@@ -5,7 +5,7 @@ import java.util.Queue;
 
 import org.json.JSONObject;
 
-class Drone implements CommandQueue{
+public class Drone{
 
     private int x = 0;
     private int y = 0;
@@ -25,7 +25,6 @@ class Drone implements CommandQueue{
         this.moveQueue = new LinkedList<>();
     }
 
-    @Override
     public JSONObject getNextMove(){
 
         
@@ -132,63 +131,12 @@ class Drone implements CommandQueue{
                 setX(x-1);
                 break;
             default:
-                System.out.println("No known direction");
                 break;
         }
     }
 
-    //f = forward, r = right, l = left, b = backward
-    private char getRelativeDir(char echoDir){
-        switch (dir) {
-            case NORTH:
-                switch (echoDir){
-                    case 'N':
-                        return 'f';
-                    case 'E':
-                        return 'r';
-                    case 'W':
-                        return 'l';
-                    default:
-                        return 'b';
-                }
-            case EAST:
-                switch (echoDir){
-                    case 'E':
-                        return 'f';
-                    case 'S':
-                        return 'r';
-                    case 'N':
-                        return 'l';
-                    default:
-                        return 'b';
-                } 
-            case SOUTH:
-                switch (echoDir){
-                    case 'S':
-                        return 'f';
-                    case 'W':
-                        return 'r';
-                    case 'E':
-                        return 'l';
-                    default:
-                        return 'b';
-                }
-            case WEST:
-                switch (echoDir){
-                    case 'W':
-                        return 'f';
-                    case 'N':
-                        return 'r';
-                    case 'S':
-                        return 'l';
-                    default:
-                        return 'b';
-                }
-            default:
-                System.out.println("No known direction");
-                return 'b';
-        }
-    }
+    
+    
 
 
 }
